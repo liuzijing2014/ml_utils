@@ -84,11 +84,10 @@ def http_args(args):
 def vllm_args_dict(args):
     args_dict = {
         "pretrained": MODEL_PATH,
-        "max_length": args.max_seq_len,
+        "max_model_len": args.max_seq_len,
         "tensor_parallel_size": args.tensor_parallel_size,
         "dtype": "auto",
         "gpu_memory_utilization": GPU_MEMORY_UTILIZATION,
-        "max_gen_toks": MAX_OUTPUT_LEN,
         "seed": 0,
     }
     if args.quantization is not None:
@@ -128,8 +127,10 @@ def launch_lm_eval(args):
         log_samples=True,
         evaluation_tracker=tracker,
         task_manager=task_manager,
-        write_out=True,
         limit=args.limit,
+        gen_kwargs={
+            "max_gen_toks": MAX_OUTPUT_LEN,
+        }
     )
 
     if args.backend == "vllm":
